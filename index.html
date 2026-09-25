@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BDE EHES - Portail Étudiant</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #fdf8f8; 
+            color: #2b2b2b; 
+        }
+        
+        /* En-tête Rouge Bordeaux BDE EHES */
+        header { 
+            background: linear-gradient(135deg, #800020 0%, #4a0012 100%); 
+            color: white; 
+            padding: 20px 15px; 
+            text-align: center; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25); 
+            border-bottom: 3px solid #ffc107;
+        }
+        .header-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 12px;
+        }
+        .logo-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffc107;
+            background-color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        header h1 { margin: 5px 0 0 0; font-size: 22px; text-transform: uppercase; letter-spacing: 1.5px; color: #ffffff; }
+        header p { margin: 4px 0 0 0; font-size: 13px; color: #ffc107; font-weight: 500; }
+
+        /* Menu de Navigation */
+        nav { 
+            background: #2b000a; 
+            display: flex; 
+            justify-content: space-around; 
+            overflow-x: auto;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        nav button {
+            background: none;
+            border: none;
+            color: #fce4e4;
+            padding: 12px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        nav button.active {
+            color: #ffc107;
+            border-bottom: 3px solid #ffc107;
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Conteneur principal */
+        .container { padding: 15px; max-width: 800px; margin: 0 auto; }
+
+        /* Sections / Pages */
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+
+        /* Cartes */
+        .card { 
+            background: white; 
+            padding: 18px; 
+            margin-bottom: 20px; 
+            border-radius: 12px; 
+            border-top: 5px solid #800020; 
+            box-shadow: 0 3px 10px rgba(0,0,0,0.06); 
+        }
+        h2 { color: #800020; margin-top: 0; font-size: 18px; border-bottom: 2px solid #fce4e4; padding-bottom: 8px; }
+
+        /* Bannière d'Accueil */
+        .hero-banner {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* Formulaires */
+        label { font-weight: bold; font-size: 13px; display: block; margin-top: 10px; margin-bottom: 4px; color: #4a0012; }
+        input[type="text"], input[type="email"], input[type="password"], input[type="url"], input[type="file"], textarea, select {
+            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; margin-bottom: 10px;
+        }
+        
+        /* Boutons */
+        .btn-bordeaux { 
+            background-color: #800020; 
+            color: white; 
+            border: none; 
+            padding: 11px 15px; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            width: 100%; 
+            cursor: pointer; 
+            font-size: 14px; 
+            margin-top: 5px; 
+            transition: background 0.2s;
+        }
+        .btn-bordeaux:hover { background-color: #5c0017; }
+        
+        .btn-gold { 
+            background-color: #2b000a; 
+            color: #ffc107; 
+            border: 1px solid #ffc107; 
+            padding: 8px 14px; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 13px; 
+            text-decoration: none; 
+            display: inline-block; 
+        }
+
+        /* Articles & Contenus Média */
+        .info-item, .course-item { background: #fff8f8; border-left: 4px solid #800020; padding: 12px; margin-top: 12px; border-radius: 6px; }
+        .info-item h3, .course-item h3 { margin: 0 0 5px 0; color: #111; font-size: 16px; }
+        .info-item p, .course-item p { margin: 0 0 8px 0; font-size: 14px; color: #555; }
+        
+        .post-media { width: 100%; max-height: 350px; object-fit: cover; border-radius: 6px; margin: 8px 0; border: 1px solid #ddd; }
+        video.post-media { max-height: 350px; background: #000; }
+        .badge { background: #800020; color: #ffc107; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: bold; float: right; }
+
+        /* Espace Admin BDE */
+        .bde-admin-box { background: #fff0f3; border: 1px dashed #800020; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+
+        /* Chat */
+        .chat-box { max-height: 250px; overflow-y: auto; background: #fdf5f5; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #f2d6d6; }
+        .message { background: white; padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #800020; font-size: 13px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .message .author { font-weight: bold; color: #800020; font-size: 12px; display: block; margin-bottom: 2px; }
+        
+        #user-welcome { background: #4a0012; color: #ffc107; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-weight: bold; text-align: center; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <!-- EN-TÊTE AVEC LOGOS EHES & BDE -->
+    <header>
+        <div class="header-logos">
+            <img src="logo_ehes.png" alt="Logo EHES" class="logo-img" onerror="this.src='https://via.placeholder.com/70/800020/FFFFFF?text=EHES'">
+            <img src="logo_bde.png" alt="Logo BDE EHES" class="logo-img" onerror="this.src='https://via.placeholder.com/70/800020/FFFFFF?text=BDE'">
+        </div>
+        <h1>BDE EHES</h1>
+        <p>École des Hautes Études en Sciences</p>
+    </header>
+
+    <!-- MENU DE NAVIGATION -->
+    <nav>
+        <button class="nav-btn active" onclick="showPage('accueil', event)">🏠 Accueil</button>
+        <button class="nav-btn" onclick="showPage('infos', event)">📢 Infos Hebdo</button>
+        <button class="nav-btn" onclick="showPage('cours', event)">📚 Cours & TD</button>
+        <button class="nav-btn" onclick="showPage('discussion', event)">💬 Forum</button>
+        <button class="nav-btn" onclick="showPage('compte', event)">👤 Compte</button>
+        <button class="nav-btn" onclick="showPage('admin', event)">🔐 Admin BDE</button>
+    </nav>
+
+    <div class="container">
+
+        <div id="user-welcome" style="display: none;"></div>
+
+        <!-- PAGE 1 : ACCUEIL -->
+        <div id="page-accueil" class="page-section active">
+            <div class="card">
+                <h2>Bienvenue au BDE EHES !</h2>
+                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800" alt="Vie étudiante EHES" class="hero-banner">
+                <p>Bienvenue sur la plateforme officielle du Bureau des Étudiants de l'École des Hautes Études en Sciences. Retrouvez vos supports de cours, les annonces hebdomadaires et l'espace d'échange étudiant.</p>
+            </div>
+
+            <div class="card">
+                <h2>⚡ Dernières Actualités à la Une</h2>
+                <div id="home-latest-info">
+                    <div class="info-item">
+                        <h3>Lancement du portail officiel BDE EHES</h3>
+                        <p>Consultez vos cours, restez informés des événements de la semaine et échangez avec vos camarades.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 2 : INFOS HEBDO -->
+        <div id="page-infos" class="page-section">
+            <div class="card">
+                <h2>📢 Fil d'Actualités & Infos Hebdo</h2>
+                <div id="info-list">
+                    <div class="info-item">
+                        <h3>Bienvenue sur la plateforme du BDE EHES</h3>
+                        <p>Retrouvez ici toutes les informations de la semaine et le programme des événements du campus.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 3 : COURS & TD -->
+        <div id="page-cours" class="page-section">
+            <div class="card">
+                <h2>📚 Ressources Académiques (Cours & TD)</h2>
+                <div id="course-list">
+                    <div class="course-item">
+                        <span class="badge">L2</span>
+                        <h3>Ressources Académiques</h3>
+                        <p>Support de cours et séries d'exercices de TD.</p>
+                        <a href="https://drive.google.com" target="_blank" class="btn-gold">📥 Télécharger (PDF)</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 4 : FORUM / DISCUSSION -->
+        <div id="page-discussion" class="page-section">
+            <div class="card">
+                <h2>💬 Espace Discussion Étudiants</h2>
+                <div class="chat-box" id="chat-box">
+                    <div class="message">
+                        <span class="author">BDE EHES :</span>
+                        Bienvenue sur l'espace d'échange du BDE ! Posez vos questions ou discutez des cours ici.
+                    </div>
+                </div>
+
+                <form id="chat-form">
+                    <textarea id="chat-message" rows="2" placeholder="Posez une question ou laissez un message..." required></textarea>
+                    <button type="submit" class="btn-bordeaux">Envoyer le message</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- PAGE 5 : CRÉATION DE COMPTE -->
+        <div id="page-compte" class="page-section">
+            <div class="card" id="auth-section">
+                <h2>👤 Créer un compte étudiant EHES</h2>
+                <form id="signup-form">
+                    <label for="fullname">Nom & Prénom :</label>
+                    <input type="text" id="fullname" placeholder="Ex: Pape Ndiaye" required>
+
+                    <label for="email">Adresse Email :</label>
+                    <input type="email" id="email" placeholder="etudiant@ehes.sn" required>
+
+                    <label for="level">Niveau / Filière :</label>
+                    <select id="level" required>
+                        <option value="">-- Sélectionnez votre niveau --</option>
+                        <option value="L1">Licence 1 (L1)</option>
+                        <option value="L2">Licence 2 (L2)</option>
+                        <option value="L3">Licence 3 (L3)</option>
+                        <option value="Master">Master</option>
+                    </select>
+
+                    <label for="password">Mot de passe :</label>
+                    <input type="password" id="password" required>
+
+                    <button type="submit" class="btn-bordeaux">S'inscrire</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- PAGE 6 : ADMIN BDE AVEC AUTORISATION & CHARGEMENT MÉDIA -->
+        <div id="page-admin" class="page-section">
+            <div class="card" style="border-top-color: #2b000a;">
+                <h2>🔐 Espace Administrateur BDE</h2>
+                
+                <!-- Demande d'autorisation / Connexion Admin -->
+                <div id="bde-login-section">
+                    <p style="font-size: 13px;">🔒 Autorisation requise. Entrez le mot de passe BDE pour publier du contenu.</p>
+                    <label for="bde-pass">Code Secret / Mot de passe Admin :</label>
+                    <input type="password" id="bde-pass" placeholder="Entrez le code administrateur">
+                    <button type="button" class="btn-gold" onclick="unlockBDE()">S'authentifier</button>
+                </div>
+
+                <!-- Panneau Administrateur (Masqué par défaut) -->
+                <div id="bde-panel" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <p style="color: #28a745; font-weight: bold; font-size: 14px; margin: 0;">✅ Autorisation Accordée</p>
+                        <button type="button" class="btn-gold" style="font-size: 11px; padding: 4px 8px;" onclick="lockBDE()">Se déconnecter</button>
+                    </div>
+                    <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
+                    
+                    <!-- Formulaire BDE : Publier Info/Image/Vidéo -->
+                    <div class="bde-admin-box">
+                        <h3>📢 Publier une Info (Photo ou Vidéo)</h3>
+                        <form id="add-info-form">
+                            <label for="info-title">Titre de l'annonce :</label>
+                            <input type="text" id="info-title" placeholder="Ex: Tournoi de Football EHES" required>
+
+                            <label for="info-content">Détails de l'annonce :</label>
+                            <textarea id="info-content" rows="2" placeholder="Expliquez l'évènement..." required></textarea>
+
+                            <label for="info-file">Sélectionner une photo ou une vidéo (depuis votre appareil) :</label>
+                            <input type="file" id="info-file" accept="image/*,video/*">
+
+                            <button type="submit" class="btn-bordeaux">Publier sur le site</button>
+                        </form>
+                    </div>
+
+                    <!-- Formulaire BDE : Ajouter Cours -->
+                    <div class="bde-admin-box">
+                        <h3>📚 Ajouter un Cours ou TD</h3>
+                        <form id="add-course-form">
+                            <label for="course-title">Nom de la matière :</label>
+                            <input type="text" id="course-title" placeholder="Ex: Géologie Pétrolière" required>
+
+                            <label for="course-level">Niveau :</label>
+                            <select id="course-level" required>
+                                <option value="L1">Licence 1 (L1)</option>
+                                <option value="L2">Licence 2 (L2)</option>
+                                <option value="L3">Licence 3 (L3)</option>
+                                <option value="Master">Master</option>
+                            </select>
+
+                            <label for="course-link">Lien du fichier (Google Drive / PDF) :</label>
+                            <input type="url" id="course-link" placeholder="https://drive.google.com/..." required>
+
+                            <button type="submit" class="btn-bordeaux">Publier le cours</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SCRIPT JAVASCRIPT -->
+    <script>
+        let currentUser = null;
+        const SECRET_BDE_CODE = "bde2026"; // Le code/mot de passe d'accès administrateur BDE
+
+        // Navigation entre les pages
+        function showPage(pageId, evt) {
+            const pages = document.querySelectorAll('.page-section');
+            pages.forEach(p => p.classList.remove('active'));
+
+            const buttons = document.querySelectorAll('nav button');
+            buttons.forEach(b => b.classList.remove('active'));
+
+            document.getElementById(`page-${pageId}`).classList.add('active');
+            if (evt) {
+                evt.target.classList.add('active');
+            }
+        }
+
+        // Vérification de l'autorisation BDE
+        function unlockBDE() {
+            const passInput = document.getElementById('bde-pass').value;
+            if (passInput === SECRET_BDE_CODE) {
+                document.getElementById('bde-login-section').style.display = 'none';
+                document.getElementById('bde-panel').style.display = 'block';
+                document.getElementById('bde-pass').value = '';
+                alert("Autorisation acceptée ! Vous pouvez gérer le contenu.");
+            } else {
+                alert("Accès refusé ! Mot de passe administrateur incorrect.");
+            }
+        }
+
+        // Déconnexion Admin BDE
+        function lockBDE() {
+            document.getElementById('bde-login-section').style.display = 'block';
+            document.getElementById('bde-panel').style.display = 'none';
+        }
+
+        // Inscription étudiant
+        document.getElementById('signup-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('fullname').value;
+            const level = document.getElementById('level').value;
+
+            currentUser = `${name} (${level})`;
+
+            document.getElementById('auth-section').style.display = 'none';
+            const welcomeDiv = document.getElementById('user-welcome');
+            welcomeDiv.style.display = 'block';
+            welcomeDiv.innerText = `Connecté en tant que : ${currentUser}`;
+
+            alert(`Compte créé avec succès ! Bienvenue au BDE EHES, ${name}.`);
+            showPage('accueil');
+        });
+
+        // Publier une Info avec Fichier Média (Image ou Vidéo)
+        document.getElementById('add-info-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('info-title').value;
+            const content = document.getElementById('info-content').value;
+            const fileInput = document.getElementById('info-file');
+            const file = fileInput.files[0];
+
+            function renderPublication(mediaHTML) {
+                const infoList = document.getElementById('info-list');
+                const homeInfoList = document.getElementById('home-latest-info');
+                
+                const newInfo = document.createElement('div');
+                newInfo.className = 'info-item';
+                newInfo.innerHTML = `
+                    <h3>${title}</h3>
+                    <p>${content}</p>
+                    ${mediaHTML}
+                    <small style="color:#800020; font-weight:bold;">Publié par le BDE EHES</small>
+                `;
+
+                infoList.prepend(newInfo);
+                homeInfoList.prepend(newInfo.cloneNode(true));
+
+                document.getElementById('info-title').value = '';
+                document.getElementById('info-content').value = '';
+                fileInput.value = '';
+
+                alert("Annonce publiée avec succès !");
+            }
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const fileUrl = event.target.result;
+                    let mediaHTML = '';
+
+                    if (file.type.startsWith('image/')) {
+                        mediaHTML = `<img src="${fileUrl}" class="post-media" alt="Photo annonce">`;
+                    } else if (file.type.startsWith('video/')) {
+                        mediaHTML = `<video src="${fileUrl}" class="post-media" controls></video>`;
+                    }
+
+                    renderPublication(mediaHTML);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                renderPublication('');
+            }
+        });
+
+        // Ajouter un Cours / TD (Mode Admin)
+        document.getElementById('add-course-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('course-title').value;
+            const level = document.getElementById('course-level').value;
+            const link = document.getElementById('course-link').value;
+
+            const courseList = document.getElementById('course-list');
+            const newCourse = document.createElement('div');
+            newCourse.className = 'course-item';
+            newCourse.innerHTML = `
+                <span class="badge">${level}</span>
+                <h3>${title}</h3>
+                <p>Proposé par le BDE EHES</p>
+                <a href="${link}" target="_blank" class="btn-gold">📥 Télécharger (PDF)</a>
+            `;
+
+            courseList.prepend(newCourse);
+
+            document.getElementById('course-title').value = '';
+            document.getElementById('course-link').value = '';
+
+            alert("Nouveau cours ajouté avec succès !");
+        });
+
+        // Chat
+        document.getElementById('chat-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!currentUser) {
+                alert("Veuillez d'abord créer un compte dans la section 'Compte' !");
+                return;
+            }
+
+            const msgInput = document.getElementById('chat-message');
+            const msgText = msgInput.value;
+
+            const chatBox = document.getElementById('chat-box');
+            const newMsg = document.createElement('div');
+            newMsg.className = 'message';
+            newMsg.innerHTML = `<span class="author">${currentUser} :</span>${msgText}`;
+
+            chatBox.appendChild(newMsg);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            msgInput.value = '';
+        });
+    </script>
+
+</body>
+</html>
